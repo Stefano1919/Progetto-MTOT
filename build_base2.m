@@ -104,7 +104,7 @@ for i=1:20
 end
 
 %% RICOSTRUZIONE SPETTRO
-tau = 5; % Taglio delle componenti
+tau = 7; % Taglio delle componenti
 
 % Proiezione
 scores = U(:, 1:tau)' * Xn;
@@ -178,3 +178,4 @@ base.U = U;
 base.Media = Xm;
 base.SD = Xds;
 save base.mat base -mat
+
