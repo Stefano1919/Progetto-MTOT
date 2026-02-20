@@ -1,7 +1,7 @@
 close all; clear;
 
-load IASI.mat
-rumore_strumentale_completo = load('nednL1C.txt');
+load resources/IASI.mat
+rumore_strumentale_completo = load('resources/nednL1C.txt');
 
 % Finestra spettrale N2O
 inizio_banda = 2150.0;
