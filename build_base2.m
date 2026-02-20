@@ -1,181 +1,143 @@
-close all; clear all
+close all; clear;
 
 load IASI.mat
-rumore = load('nednL1C.txt');
+rumore_strumentale_completo = load('nednL1C.txt');
 
-% Finestra spettrale n2o in cm^-1
-w1 = 2150.0;  
-w2 = 2250.0;  
-dw = 0.25;   % Risoluzione
+% Finestra spettrale N2O
+inizio_banda = 2150.0;
+fine_banda = 2250.0;
+risoluzione_spettrale = 0.25;
 
-% Finestra spettrale completa di IASI
-wave = [645:dw:2760]';  
+% Finestra spettrale completa IASI
+numeri_onda_completi = (645:risoluzione_spettrale:2760)';
 
-% n1: numero di canali spettrali
-% n2: numero di profili atmosferici (spettri diversi)
-% n3: numero di angoli di vista (FOV - Field Of View)
-n3 = 1;
-[n1,n2] = size(d.rad);
+[num_canali_totali, num_spettri_totali] = size(d.rad);
 
-% Calcoliamo gli indici dei numeri d'onda
-nb1 = fix(w1-wave(1))/dw+1;
+% Indici dei numeri d'onda per la banda N2O
+indice_inizio_banda = fix((inizio_banda - numeri_onda_completi(1)) / risoluzione_spettrale) + 1;
+indice_fine_banda = fix((fine_banda - numeri_onda_completi(1)) / risoluzione_spettrale) + 1;
 
-
-nb2 = fix(w2-wave(1))/dw+1;
-
-indici_ok = find(d.avhrr_lf == 100 & d.avhrr_cf <= 10 & d.fovn == 1);
-
+indici_spettri_validi = find(d.avhrr_lf == 100 & d.avhrr_cf <= 10 & d.fovn == 1);
 
 %% VISUALIZZAZIONE SPETTRI
-X = d.rad(nb1:nb2, indici_ok); 
-[~, n2_filtrati] = size(X);
-% Estrae il vettore dei numeri d'onda corrispondente (Asse X)
-w = wave(nb1:nb2);
+radianze_banda = d.rad(indice_inizio_banda:indice_fine_banda, indici_spettri_validi);
+[~, num_spettri_validi] = size(radianze_banda);
 
+numeri_onda_banda = numeri_onda_completi(indice_inizio_banda:indice_fine_banda);
 
-figure(1); clf; 
-
-% Plottiamo solo i primi 50 spettri per non far esplodere il pc :)
-numero_spettri_da_plottare = 50; 
-
-plot(w, X(:, 1:numero_spettri_da_plottare));
-title(['Spettri IASI - Banda N_2O (' num2str(w1) '-' num2str(w2) ' cm^{-1})']);
+figure(1); clf;
+numero_spettri_visualizzati = 50;
+plot(numeri_onda_banda, radianze_banda(:, 1:numero_spettri_visualizzati));
+title(sprintf('Spettri IASI - Banda N_2O (%.1f-%.1f cm^{-1})', inizio_banda, fine_banda));
 xlabel('Numero d''onda [cm^{-1}]');
 ylabel('Radianza [mW / (m^2 sr cm^{-1})]');
 grid on;
-xlim([w1 w2])
+xlim([inizio_banda fine_banda]);
 
-%% Calcolo statistiche spettri 
-% Calcola lo spettro medio dell'intero dataset
-% mean(X,2) calcola la media lungo le colonne (dimensione 2)
-% Ogni elemento di Xm è la radianza media per quel canale spettrale
-Xm  = mean(X,2);
+%% STATISTICHE E PCA
+radianza_media = mean(radianze_banda, 2);
 
-% Plotta lo spettro medio
-figure; 
-plot(w,Xm)
-
-% Plotta la deviazione standard
-% Mostra quali canali spettrali hanno maggiore variabilità
-% Alta variabilità → più informazione sulla variabilità atmosferica
-
-
-
-% Estraiamo solo il pezzo che ci serve per la n2o
-rumore_n2o = rumore(nb1:nb2);
-
-Xds = rumore_n2o;
-figure; 
-plot(w,Xds)
-% La standardizzazione è fondamentale per la PCA:
-% - Rimuove il valore medio (centra i dati)
-% - Normalizza per la deviazione standard (rende i canali comparabili)
-
-% Inizializza la matrice degli spettri standardizzati
-Xn = zeros(nb2-nb1+1,n2_filtrati);
-
-% Loop su tutti gli spettri
-for i=1:n2_filtrati
-    Xn(:,i) = (X(:,i)-Xm)./Xds;
-end
-
-
-% La matrice di covarianza misura come variano insieme i diversi canali spettrali
-% C(i,j) rappresenta la covarianza tra il canale i e il canale j
-C = (1/n2_filtrati)*(Xn*Xn');
-
-% SVD decompone la matrice di covarianza: C = U * S * V'
-% U: matrice degli autovettori (componenti principali) - direzioni di massima varianza
-% S: matrice diagonale degli autovalori - varianza spiegata da ogni componente
-% V: in questo caso V=U perché C è simmetrica
-% Gli autovettori sono ordinati per autovalore decrescente
-[U,S,V] = svd(C);
-
-figure;
-semilogy(diag(S))
-title("Autovalori delle componenti principali")
-
-%Prime 20 pc
-figure;
-for i=1:20
-    subplot(5,4,i) 
-    plot(wave(nb1:nb2),U(:,i))
-    title(["PC " num2str(i)]);
-end
-
-%% RICOSTRUZIONE SPETTRO
-tau = 7; % Taglio delle componenti
-
-% Proiezione
-scores = U(:, 1:tau)' * Xn;
-
-% Ricostruzione spettri
-Xn_ricostruiti = U(:, 1:tau) * scores;
-
-% torniamo indietro dala standardizzazione
-X_ricostruito = (Xn_ricostruiti .* Xds) + Xm;
-
-%% METRCIHE
-Residui = X - X_ricostruito;
-
-% 2 perché lungo le colonne ci sono gli spettri
-Bias = mean(Residui, 2);
-RMSD = sqrt(mean(Residui.^2, 2));
-
-
-figure(10); clf;
-
-subplot(2,1,1);
-plot(w, Bias, 'b', 'LineWidth', 1.2);
-yline(0, 'r--', 'LineWidth', 1.5);
-title(['Bias della Ricostruzione con \tau = ' num2str(tau)]);
-ylabel('Bias [Radianza]');
-grid on; xlim([w1 w2]);
-
-% --- Grafico RMSD ---
-subplot(2,1,2);
-plot(w, RMSD, 'k', 'LineWidth', 1.2);
-hold on;
-plot(w, Xds, 'r--', 'LineWidth', 1.5);
-hold off;
-title('RMSD della Ricostruzione vs rumore strumentale');
+figure(2); clf;
+plot(numeri_onda_banda, radianza_media);
+title('Spettro Medio');
 xlabel('Numero d''onda [cm^{-1}]');
-ylabel('RMSD [Radianza]');
-legend('RMSD Ricostruzione', ' rumore strumentale', 'Location', 'Best');
-grid on; xlim([w1 w2]);
+ylabel('Radianza Media [mW / (m^2 sr cm^{-1})]');
+grid on;
 
-%% MAPPE 
-canale_test = 100;
-freq_test = w(canale_test);
+rumore_strumentale_banda = rumore_strumentale_completo(indice_inizio_banda:indice_fine_banda);
 
-lat_map = d.lat(indici_ok);
-lon_map = d.lon(indici_ok);
-radianza_vera = X(canale_test, :);
-radianza_ricostruita = X_ricostruito(canale_test, :);
-errore_mappa = Residui(canale_test, :);
+figure(3); clf;
+plot(numeri_onda_banda, rumore_strumentale_banda);
+title('Rumore Strumentale');
+xlabel('Numero d''onda [cm^{-1}]');
+ylabel('Rumore [mW / (m^2 sr cm^{-1})]');
+grid on;
 
-figure(11); clf;
-% mappa radianza or
-subplot(1,2,1);
-geoscatter(lat_map, lon_map, 15, radianza_vera, 'filled', 'MarkerFaceAlpha', 0.7);
+% Standardizzazione
+radianze_standardizzate = zeros(indice_fine_banda - indice_inizio_banda + 1, num_spettri_validi);
+for i = 1:num_spettri_validi
+    radianze_standardizzate(:, i) = (radianze_banda(:, i) - radianza_media) ./ rumore_strumentale_banda;
+end
+
+matrice_covarianza = (1 / num_spettri_validi) * (radianze_standardizzate * radianze_standardizzate');
+[autovettori, autovalori, ~] = svd(matrice_covarianza);
+
+figure(4); clf;
+semilogy(diag(autovalori));
+title('Autovalori delle Componenti Principali');
+xlabel('Indice Componente Principale');
+ylabel('Autovalore');
+grid on;
+
+figure(5); clf;
+for i = 1:20
+    subplot(5, 4, i);
+    plot(numeri_onda_banda, autovettori(:, i));
+    title(sprintf('PC %d', i));
+end
+
+%% RICOSTRUZIONE
+num_componenti_principali = 7;
+
+coefficienti_proiezione = autovettori(:, 1:num_componenti_principali)' * radianze_standardizzate;
+radianze_standard_ricostruite = autovettori(:, 1:num_componenti_principali) * coefficienti_proiezione;
+radianze_ricostruite = (radianze_standard_ricostruite .* rumore_strumentale_banda) + radianza_media;
+
+%% METRICHE
+residui_ricostruzione = radianze_banda - radianze_ricostruite;
+
+bias_ricostruzione = mean(residui_ricostruzione, 2);
+rmsd_ricostruzione = sqrt(mean(residui_ricostruzione.^2, 2));
+
+figure(6); clf;
+subplot(2, 1, 1);
+plot(numeri_onda_banda, bias_ricostruzione, 'b', 'LineWidth', 1.2);
+yline(0, 'r--', 'LineWidth', 1.5);
+title(sprintf('Bias della Ricostruzione con %d Componenti', num_componenti_principali));
+ylabel('Bias [Radianza]');
+grid on;
+xlim([inizio_banda fine_banda]);
+
+subplot(2, 1, 2);
+plot(numeri_onda_banda, rmsd_ricostruzione, 'k', 'LineWidth', 1.2);
+hold on;
+plot(numeri_onda_banda, rumore_strumentale_banda, 'r--', 'LineWidth', 1.5);
+hold off;
+title('RMSD della Ricostruzione vs Rumore Strumentale');
+xlabel('Numero d''onda [cm^{-1}]');
+ylabel('Radianza');
+legend('RMSD Ricostruzione', 'Rumore Strumentale', 'Location', 'Best');
+grid on;
+xlim([inizio_banda fine_banda]);
+
+%% MAPPE GEOGRAFICHE
+indice_canale_mappa = 100;
+numero_onda_mappa = numeri_onda_banda(indice_canale_mappa);
+
+latitudini_mappa = d.lat(indici_spettri_validi);
+longitudini_mappa = d.lon(indici_spettri_validi);
+radianza_originale_mappa = radianze_banda(indice_canale_mappa, :);
+radianza_ricostruita_mappa = radianze_ricostruite(indice_canale_mappa, :);
+errore_ricostruzione_mappa = residui_ricostruzione(indice_canale_mappa, :);
+
+figure(7); clf;
+subplot(1, 2, 1);
+geoscatter(latitudini_mappa, longitudini_mappa, 15, radianza_originale_mappa, 'filled', 'MarkerFaceAlpha', 0.7);
 colormap(jet); colorbar;
-title(['Radianza Originale a ' num2str(freq_test) ' cm^{-1}']);
+title(sprintf('Radianza Originale (%.2f cm^{-1})', numero_onda_mappa));
 
-% mappa radianza ricostruita
-subplot(1,2,2);
-geoscatter(lat_map, lon_map, 15, radianza_ricostruita, 'filled', 'MarkerFaceAlpha', 0.7);
+subplot(1, 2, 2);
+geoscatter(latitudini_mappa, longitudini_mappa, 15, radianza_ricostruita_mappa, 'filled', 'MarkerFaceAlpha', 0.7);
 colormap(jet); colorbar;
-title(['Radianza Ricostruita a ' num2str(freq_test) ' cm^{-1}']);
+title(sprintf('Radianza Ricostruita (%.2f cm^{-1})', numero_onda_mappa));
 
-% Mappa errore
-figure(12); clf;
-geoscatter(lat_map, lon_map, 20, errore_mappa, 'filled', 'MarkerFaceAlpha', 0.8);
-colormap(jet); 
-colorbar;
-title(['Errore ' num2str(freq_test) ' cm^{-1}']);
-%% SASLVATAGGIO BASE
-base.U = U;
-base.Media = Xm;
-base.SD = Xds;
-save base.mat base -mat
+figure(8); clf;
+geoscatter(latitudini_mappa, longitudini_mappa, 20, errore_ricostruzione_mappa, 'filled', 'MarkerFaceAlpha', 0.8);
+colormap(jet); colorbar;
+title(sprintf('Errore di Ricostruzione (%.2f cm^{-1})', numero_onda_mappa));
 
+%% SALVATAGGIO
+base_dati.autovettori = autovettori;
+base_dati.radianza_media = radianza_media;
+base_dati.rumore_strumentale = rumore_strumentale_banda;
+save('base.mat', 'base_dati', '-mat');
