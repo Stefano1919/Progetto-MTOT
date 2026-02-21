@@ -1,0 +1,64 @@
+- name: Parametri Spettrali
+  id: ParametriTab
+  components:
+    - kind: uispinner
+      id: CampoInizioBanda
+      labels:
+        - text: Inizio Banda
+          position: left
+        - text: cm^{-1}
+          position: right
+          interpreter: tex
+      Step: 1.0
+      Limits: [100.0, 3000.0]
+    - kind: uispinner
+      id: CampoFineBanda
+      labels:
+        - text: Fine Banda
+          position: left
+        - text: cm^{-1}
+          position: right
+          interpreter: tex
+      Step: 1.0
+      Limits: [100.0, 3000.0]
+    - kind: uispinner
+      id: CampoRisoluzione
+      labels:
+        - text: Risoluzione
+          position: left
+        - text: cm^{-1}
+          position: right
+          interpreter: tex
+      Step: 0.05
+      Limits: [0.01, 10.0]
+    - kind: uispinner
+      id: CampoComponentiPrincipali
+      labels:
+        - text: Numero PC (tau)
+          position: left
+      Step: 1
+      Limits: [1, 50]
+- name: Visualizzazione
+  id: VisTab
+  components:
+    - kind: uispinner
+      id: CampoSpettriVis
+      labels:
+        - text: Num Spettri(Fig 1)
+          position: left
+      Step: 1
+      Limits: [1, 1000]
+    - kind: uispinner
+      id: CampoIndiceSpettroTest
+      labels:
+        - text: Indice Spettro Test
+          position: left
+      Step: 1
+      Limits: [1, 1000]
+    - kind: uispinner
+      id: CampoIndiceCanaleMappa
+      labels:
+        - text: Indice Canale Mappa
+          position: left
+      Step: 1
+      Limits: [1, 1000]

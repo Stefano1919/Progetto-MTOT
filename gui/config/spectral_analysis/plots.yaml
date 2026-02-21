@@ -1,0 +1,55 @@
+- name: Banda N2O
+  drawing:
+    - "plot(numeri_onda_banda, radianze_banda(:, 1:numero_spettri_visualizzati));"
+    - "title(sprintf('Spettri IASI - Banda N_2O (%.1f-%.1f cm^{-1})', inizio_banda, fine_banda));"
+    - "xlabel('Numero d''onda [cm^{-1}]'); ylabel('Radianza [mW / (m^2 sr cm^{-1})]'); grid on;"
+    - "xlim([inizio_banda fine_banda]);"
+- name: Spettro Medio
+  drawing:
+    - "plot(numeri_onda_banda, radianza_media); title('Spettro Medio'); xlabel('Numero d''onda [cm^{-1}]'); ylabel('Radianza Media [mW / (m^2 sr cm^{-1})]'); grid on;"
+- name: Rumore Strumentale
+  drawing:
+    - "plot(numeri_onda_banda, rumore_strumentale_banda);"
+    - "title('Rumore Strumentale'); xlabel('Numero d''onda [cm^{-1}]'); ylabel('Rumore [mW / (m^2 sr cm^{-1})]'); grid on;"
+- name: Autovalori
+  drawing:
+    - "semilogy(diag(autovalori)); title('Autovalori delle Componenti Principali'); xlabel('Indice Componente Principale'); ylabel('Autovalore'); grid on;"
+- name: Prime Componenti
+  drawing:
+    - "for i_pc=1:min(20, num_componenti_principali); plot(numeri_onda_banda, autovettori(:, i_pc)); hold on; end; hold off;"
+    - "title('Prime Componenti Principali'); grid on;"
+- name: Bias Ricostruzione
+  drawing:
+    - "plot(numeri_onda_banda, bias_ricostruzione, 'b', 'LineWidth', 1.2);"
+    - "yline(0, 'r--', 'LineWidth', 1.5);"
+    - "title(sprintf('Bias della Ricostruzione con %d Componenti', num_componenti_principali)); ylabel('Bias [Radianza]'); grid on; xlim([inizio_banda fine_banda]);"
+- name: RMSD vs Rumore
+  drawing:
+    - "plot(numeri_onda_banda, rmsd_ricostruzione, 'k', 'LineWidth', 1.2);"
+    - "hold on; plot(numeri_onda_banda, rumore_strumentale_banda, 'r--', 'LineWidth', 1.5); hold off;"
+    - "title('RMSD Ricostruzione vs Rumore Strumentale'); xlabel('Numero d''onda [cm^{-1}]'); ylabel('Radianza'); legend('RMSD Ricostruzione', 'Rumore Strumentale', 'Location', 'Best'); grid on; xlim([inizio_banda fine_banda]);"
+- name: Radianza Orig(Mappa)
+  drawing:
+    - "geoscatter(latitudini_mappa, longitudini_mappa, 15, radianza_originale_mappa, 'filled', 'MarkerFaceAlpha', 0.7);"
+    - "colormap(jet); colorbar;"
+    - "title(sprintf('Radianza Originale (%.2f cm^{-1})', numero_onda_mappa));"
+- name: Radianza Ric(Mappa)
+  drawing:
+    - "geoscatter(latitudini_mappa, longitudini_mappa, 15, radianza_ricostruita_mappa, 'filled', 'MarkerFaceAlpha', 0.7);"
+    - "colormap(jet); colorbar;"
+    - "title(sprintf('Radianza Ricostruita (%.2f cm^{-1})', numero_onda_mappa));"
+- name: Errore Ric(Mappa)
+  drawing:
+    - "geoscatter(latitudini_mappa, longitudini_mappa, 20, errore_ricostruzione_mappa, 'filled', 'MarkerFaceAlpha', 0.8);"
+    - "colormap(jet); colorbar;"
+    - "title(sprintf('Errore di Ricostruzione (%.2f cm^{-1})', numero_onda_mappa));"
+- name: Confronto
+  drawing:
+    - "plot(numeri_onda_banda, radianze_banda(:, indice_spettro_test), 'b', 'LineWidth', 1);"
+    - "hold on; plot(numeri_onda_banda, radianze_ricostruite(:, indice_spettro_test), 'r', 'LineWidth', 1); hold off;"
+    - "title(sprintf('Cnf orig e ric (#%d, \\tau = %d)', indice_spettro_test, num_componenti_principali)); xlabel('Numero d''onda [cm^{-1}]'); ylabel('Radianza'); legend('Spettro originale', 'spettro ricostruito', 'Location', 'Best'); grid on; xlim([inizio_banda fine_banda]);"
+- name: Bonus
+  drawing:
+    - "plot(numeri_onda_banda, dev_std_bonus, 'b', 'LineWidth', 1.5);"
+    - "hold on; plot(numeri_onda_banda, rumore_strumentale_banda, 'r--', 'LineWidth', 2); hold off;"
+    - "title(sprintf('Deviazione Standard PC Scartate vs Rumore Strumentale (\\tau = %d)', num_componenti_principali)); xlabel('Numero d''onda [cm^{-1}]'); ylabel('Deviazione standard [Radianza]'); legend('Dev Std componenti scartate', 'Rumore Strumentale Teorico', 'Location', 'Best'); grid on; xlim([inizio_banda fine_banda]);"
