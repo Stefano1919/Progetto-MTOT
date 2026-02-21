@@ -6,8 +6,7 @@
       labels:
         - text: Composto Gas
           position: left
-      Items:
-        - N2O
+      items_from_file: config/spectral_analysis/gas_compounds.txt
     - kind: uispinner
       id: CampoFov
       labels:

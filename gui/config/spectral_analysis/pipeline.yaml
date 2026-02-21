@@ -1,5 +1,5 @@
 - "risoluzione_spettrale = 0.25; num_componenti_principali = 7; numero_spettri_visualizzati = 50; indice_spettro_test = 100; indice_canale_mappa = 100;"
-- "switch gas_selezionato; case 'N2O'; inizio_banda=2150.0; fine_banda=2250.0; otherwise; inizio_banda=2150.0; fine_banda=2250.0; end"
+- "gas_file_data = readcell('../gui/config/spectral_analysis/gas_compounds.txt'); row_idx = find(strcmp(strtrim(gas_file_data(:,1)), gas_selezionato)); inizio_banda = gas_file_data{row_idx, 2}; fine_banda = gas_file_data{row_idx, 3};"
 - "if strcmp(terreno_selezionato, 'Terra'); val_terreno = 100; else; val_terreno = 0; end"
 - "load ../resources/IASI.mat"
 - "rumore_strumentale_completo = load('../resources/nednL1C.txt');"

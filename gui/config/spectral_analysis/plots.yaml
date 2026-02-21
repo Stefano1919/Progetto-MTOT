@@ -1,7 +1,7 @@
-- name: Banda N2O
+- name: eval(sprintf('Banda %s', gas_selezionato))
   drawing:
     - "plot(numeri_onda_banda, radianze_banda(:, 1:numero_spettri_visualizzati));"
-    - "title(sprintf('Spettri IASI - Banda N_2O (%.1f-%.1f cm^{-1})', inizio_banda, fine_banda));"
+    - "title(sprintf('Spettri IASI - Banda %s (%.1f-%.1f cm^{-1})', gas_selezionato, inizio_banda, fine_banda));"
     - "xlabel('Numero d''onda [cm^{-1}]'); ylabel('Radianza [mW / (m^2 sr cm^{-1})]'); grid on;"
     - "xlim([inizio_banda fine_banda]);"
 - name: Spettro Medio

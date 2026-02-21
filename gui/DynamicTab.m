@@ -244,6 +244,31 @@ classdef DynamicTab < handle
                                 targetProp = 'Step';
                             elseif strcmp(propName, 'value')
                                 targetProp = 'Value';
+                            elseif strcmp(propName, 'items_from_file')
+                                % Load lines from file and extract first word (comma separated)
+                                try
+                                    filePath = fullfile(fileparts(mfilename('fullpath')), val);
+                                    fid = fopen(filePath, 'r');
+                                    items = strings(0);
+                                    if fid ~= -1
+                                        while ~feof(fid)
+                                            line = fgetl(fid);
+                                            parts = strsplit(line, ',');
+                                            if ~isempty(parts) && ~isempty(strtrim(parts{1}))
+                                                items(end+1) = strtrim(parts{1});
+                                            end
+                                        end
+                                        fclose(fid);
+                                    end
+                                    newComp.Items = items;
+                                    if ~isempty(items)
+                                        newComp.Value = items(1);
+                                    end
+                                catch ME
+                                    fprintf('Warning: Failed to load items from file "%s". Error: %s\n', val, ME.message);
+                                end
+                                % Skip normal property set for this custom field
+                                continue;
                             end
 
                             if strcmp(propName, 'ButtonPushedFcn')
