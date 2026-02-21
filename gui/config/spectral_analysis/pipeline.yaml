@@ -26,4 +26,4 @@
 - "radianza_originale_mappa = radianze_banda(indice_canale_mappa, :);"
 - "radianza_ricostruita_mappa = radianze_ricostruite(indice_canale_mappa, :);"
 - "errore_ricostruzione_mappa = residui_ricostruzione(indice_canale_mappa, :);"
-- "addpath('..'); [rapporto_bonus, dev_std_bonus] = bonus(num_componenti_principali, autovettori, radianze_standardizzate, rumore_strumentale_banda, numeri_onda_banda, inizio_banda, fine_banda); rmpath('..');"
+- "addpath('..'); [rapporto_bonus, dev_std_bonus] = bonus(num_componenti_principali, autovettori, radianze_standardizzate, rumore_strumentale_banda, numeri_onda_banda, inizio_banda, fine_banda); if ishandle(13), close(13); end; rmpath('..');"
