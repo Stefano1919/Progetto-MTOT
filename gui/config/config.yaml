@@ -1,39 +1,26 @@
 - exercise: Analisi Spettrale IASI
   settings: spectral_analysis/tabSettings.yaml
+  image: IASI.jpg
   defaults:
     - id: ParametriTab
       values:
-        CampoInizioBanda: 2150.0
-        CampoFineBanda: 2250.0
-        CampoRisoluzione: 0.25
-        CampoComponentiPrincipali: 7
-    - id: VisTab
-      values:
-        CampoSpettriVis: 50
-        CampoIndiceSpettroTest: 100
-        CampoIndiceCanaleMappa: 100
+        MenuGas: N2O
+        CampoFov: 1
+        MenuTerreno: Terra
+        CampoNubi: 10
   inputs:
-    - name: inizio_banda
+    - name: gas_selezionato
       tab: ParametriTab
-      component: CampoInizioBanda
-    - name: fine_banda
+      component: MenuGas
+    - name: fov_selezionato
       tab: ParametriTab
-      component: CampoFineBanda
-    - name: risoluzione_spettrale
+      component: CampoFov
+    - name: terreno_selezionato
       tab: ParametriTab
-      component: CampoRisoluzione
-    - name: num_componenti_principali
+      component: MenuTerreno
+    - name: nubi_max
       tab: ParametriTab
-      component: CampoComponentiPrincipali
-    - name: numero_spettri_visualizzati
-      tab: VisTab
-      component: CampoSpettriVis
-    - name: indice_spettro_test
-      tab: VisTab
-      component: CampoIndiceSpettroTest
-    - name: indice_canale_mappa
-      tab: VisTab
-      component: CampoIndiceCanaleMappa
+      component: CampoNubi
   pipeline: spectral_analysis/pipeline.yaml
   plots: spectral_analysis/plots.yaml
   resultText: "['Rapporto bonus calcolato: ', num2str(rapporto_bonus)]"
