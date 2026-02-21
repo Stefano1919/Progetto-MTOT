@@ -1,5 +1,5 @@
 close all; clear;
-
+%% GIULIANO TI AMO
 load resources/IASI.mat
 rumore_strumentale_completo = load('resources/nednL1C.txt');
 
@@ -136,6 +136,23 @@ geoscatter(latitudini_mappa, longitudini_mappa, 20, errore_ricostruzione_mappa, 
 colormap(jet); colorbar;
 title(sprintf('Errore di Ricostruzione (%.2f cm^{-1})', numero_onda_mappa));
 
+% confronto spettro origianle e spettro ricostruito
+indice_spettro_test = 100;
+figure(9); clf;
+plot(numeri_onda_banda, radianze_banda(:, indice_spettro_test), 'b', 'LineWidth', 1);
+hold on;
+plot(numeri_onda_banda, radianze_ricostruite(:, indice_spettro_test), 'r', 'LineWidth', 1);
+hold off;
+
+title(sprintf('Confronto spettro originale e spettro ricostruito (Spettro #%d, \\tau = %d)', indice_spettro_test, num_componenti_principali));
+xlabel('Numero d''onda [cm^{-1}]');
+ylabel('Radianza [mW / (m^2 sr cm^{-1})]');
+legend('Spettro originale', 'spettro ricostruito', 'Location', 'Best');
+grid on;
+xlim([inizio_banda fine_banda]);
+
+%% BONUS
+[rapporto_bonus, dev_std_bonus] = bonus(num_componenti_principali, autovettori, radianze_standardizzate, rumore_strumentale_banda, numeri_onda_banda, inizio_banda, fine_banda);
 %% SALVATAGGIO
 base_dati.autovettori = autovettori;
 base_dati.radianza_media = radianza_media;
