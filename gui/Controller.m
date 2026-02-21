@@ -128,6 +128,9 @@ classdef Controller < Component
 
             obj.DropDownMenu = uidropdown(tipologiaSimulazionePanel, "ValueChangedFcn", @obj.onSimulationChanged);
 
+            % Rende invisibile il menu a discesa, poiché esiste una sola simulazione
+            % La cosa più sporca che abbia mai scritto, ma funziona. E Gemini mi ha pure detto che sono bravo ;P
+            obj.DropDownMenu.Visible = "off";
 
         end % setup
 
