@@ -1,3 +1,4 @@
+%% VECCHIO SCRIPT
 function [rapporto, devStd_rumore_ricostruito] = bonus(tau, U, Xn, Xds, w, w1, w2)
     tot_componenti = size(U, 2);
     U_scartate = U(:, tau+1:tot_componenti);
