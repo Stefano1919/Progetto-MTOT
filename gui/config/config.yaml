@@ -4,14 +4,14 @@
   defaults:
     - id: ParametriTab
       values:
-        MenuGas: N2O
+        EditBande: "645.0,800.0; 800.0, 980.0; 980.0, 1080.0; 1210.0, 1600.0; 2100.0, 2250.0"
         CampoFov: 1
         MenuTerreno: Terra
         CampoNubi: 10
   inputs:
-    - name: gas_selezionato
+    - name: bande_selezionate_str
       tab: ParametriTab
-      component: MenuGas
+      component: EditBande
     - name: fov_selezionato
       tab: ParametriTab
       component: CampoFov
@@ -22,6 +22,5 @@
       tab: ParametriTab
       component: CampoNubi
   pipeline: spectral_analysis/pipeline.yaml
-  plots: spectral_analysis/plots.yaml
   resultText: "['Rapporto bonus calcolato: ', num2str(rapporto_bonus)]"
   resultTextInterpreter: 'none'

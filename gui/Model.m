@@ -185,6 +185,20 @@ classdef Model < handle
 
             end
 
+            %% Hijack delle figure create dalla pipeline
+            if exist('hijack_figures', 'var') && iscell(hijack_figures) && ~isempty(hijack_figures)
+                obj.App.VistaGrafici.setupTabs(hijack_figures);
+                for i = 1:numel(hijack_figures)
+                    h = hijack_figures{i}.handle;
+                    if ishandle(h)
+                        fig = figure(h);
+                        fig.Visible = 'off';
+                        obj.App.VistaGrafici.updatePlot(i, fig.Children);
+                        close(fig);
+                    end
+                end
+            end
+
             notify( obj, "DataChanged" )
 
         end % simulate

@@ -19,7 +19,7 @@ classdef App < handle
 
             %% Configurazione finestra principale
             obj.Figure = uifigure("Visible", "off");
-            obj.Figure.Name = "Sensori-Rivelatori-Dispositivi-Elettronici-2024-2025";
+            obj.Figure.Name = "Metodi e Tecniche per l'Osservazione della Terra 2025-2026";
             obj.Figure.Units = "normalized";
             obj.Figure.Position = [0,0,1,1];
             obj.Figure.WindowState = "maximized";
