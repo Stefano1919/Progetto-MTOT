@@ -1,5 +1,4 @@
 close all; clear;
-%% GIULIANO TI AMO
 load resources/IASI.mat
 rumore_strumentale_completo = load('resources/nednL1C.txt');
 
