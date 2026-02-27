@@ -4,7 +4,7 @@
   defaults:
     - id: ParametriTab
       values:
-        EditBande: "645.0,800.0; 800.0, 980.0; 980.0, 1080.0; 1210.0, 1600.0; 2100.0, 2250.0"
+        EditBande: "645.0, 800.0, 980.0, 1080.0, 1210.0, 1600.0, 2100.0, 2250.0"
         CampoFov: 1
         MenuTerreno: Terra
         CampoNubi: 10
