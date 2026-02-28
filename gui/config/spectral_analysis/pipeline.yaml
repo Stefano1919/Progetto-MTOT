@@ -1,5 +1,5 @@
 - "bande_input = str2num(bande_selezionate_str);"
 - "if isempty(bande_input); error('Inserire almeno una banda valida (es: 645, 800)'); end"
-- "old_pwd = cd('..'); try; risultati_bande = build_base(bande_input, {}); catch ME; cd(old_pwd); rethrow(ME); end; cd(old_pwd);"
+- "old_pwd = cd('..'); try; risultati_bande = build_base(bande_input, terreno_selezionato, fov_selezionato, nubi_max, {}); catch ME; cd(old_pwd); rethrow(ME); end; cd(old_pwd);"
 - "nomi_figure = {'Dati Fisici', 'Bonus', 'Metriche', 'Confronto', 'Mappe'}; hijack_figures = {}; for k = 1:length(risultati_bande); for f = 1:5; h = k*10+f; if ishandle(h); entry = struct(); entry.name = sprintf('Banda %d (%s) - %s', k, risultati_bande{k}.nome, nomi_figure{f}); entry.handle = h; hijack_figures{end+1} = entry; end; end; end"
 - "rapporto_bonus = risultati_bande{1}.rapporto_bonus;"
