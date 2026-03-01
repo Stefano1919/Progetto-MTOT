@@ -4,6 +4,8 @@ Elaborato progettuale di Metodi e Tecniche per l'Osservazione della Terra (a.a. 
 
 Il progetto consiste nell'analizzare un dataset di misurazioni IASI e di applicare tecniche di riduzione della dimensionalità per estrarre informazioni utili, focalizzandosi sul processo di ricostruzione dei dati e sulla valutazione della bontà della ricostruzione attraverso tecniche di compressione e decompressione dei dati con l'impiego della PCA.
 
+Autori: Stefano Mattiacci, Emanuele Pio Santangelo
+
 ## Struttura del Progetto
 
 ```
