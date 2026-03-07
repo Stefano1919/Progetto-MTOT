@@ -4,7 +4,7 @@ function risultati_bande = build_base(bande_input, terreno_selezionato, fov_sele
 % La funzione applica un criterio di rumore empirico (diverso dal criterio di Kaiser) per la scelta di tau.
 
 % Parametro per la definizione della soglia di taglio del rumore
-moltiplicatore_soglia =  60.0;
+moltiplicatore_soglia =  70.0;
 
 %% GESTIONE DEGLI INPUT
 if isvector(bande_input) && length(bande_input) > 2
